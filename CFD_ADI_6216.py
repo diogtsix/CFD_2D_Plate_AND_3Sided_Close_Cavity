@@ -1,12 +1,6 @@
-# ------------Diogenis Tsichlakis-----------------------------------
-# -----------eksamhno Spoudon: 10o----------------------------------
-# -----------AEM : 6216------------------------------------
-
-
 import matplotlib.pyplot as plt
 import numpy as np
 import time 
-
 
 
 #-------------------Thomas Algorithm Function----------------------
