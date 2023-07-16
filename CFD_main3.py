@@ -59,7 +59,7 @@ def create_nodes(Dx,Dy):
             # AA.append(aaa)
             # AAA.append(b)
             # A4.append(b+0.1)
-            # Nod.append(Nodd)
+            Nod.append(Nodd)
             aaa=0
          a=0
          
@@ -77,7 +77,9 @@ def create_nodes(Dx,Dy):
         #  plt.show()
          
          
-
+   
+    
+ 
     return Nod 
    
 
