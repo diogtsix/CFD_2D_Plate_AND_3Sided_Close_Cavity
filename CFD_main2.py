@@ -78,6 +78,9 @@ def main_loop2():
             
             
             s1+=1  
+        print(K)
+        input()
+        
         s1=0
         u=Thomas(KatoDiag,Diag,PanoDiag,K)
         u=np.transpose(u)

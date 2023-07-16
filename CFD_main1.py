@@ -55,8 +55,7 @@ def eq2(self,Dx,Dy,DN,AN,KN):
     self.vel[1]=AA-BB
 
 def eq4(self,Dy,PN):
-  
-    self.vel[1]=0.25*PN.vel[1]
+    self.vel[1]=0.5*Dy*PN.vel[1]
     
 
 def main_loop(Nod, Dx, Dy):
@@ -222,7 +221,7 @@ def CompareBlasius(Nod,dx,dy,i_num,j_num):
     plt.ylabel('δ [m]',**csfont)
     plt.title('Πάχος οριακού Στρώματος δ',**csfont)
     plt.legend(['Αριθμητική','Blasius'])   
-    # plt.show()
+    plt.show()
     
     # -----------------DELTA 1 plots----------------
     
@@ -236,7 +235,7 @@ def CompareBlasius(Nod,dx,dy,i_num,j_num):
     plt.ylabel('δ1 [m]',**csfont)
     plt.title('Πάχος Μετατόπισης οριακού Στρώματος δ1',**csfont)
     plt.legend(['Αριθμητική','Blasius'])   
-    # plt.show()
+    plt.show()
     
     
     
@@ -253,7 +252,7 @@ def CompareBlasius(Nod,dx,dy,i_num,j_num):
     plt.ylabel('δ2 [m]',**csfont)
     plt.title('Πάχος Απώλειας Ορμής οριακού Στρώματος δ2',**csfont)
     plt.legend(['Αριθμητική','Blasius'])   
-    # plt.show()
+    plt.show()
     
     
     
@@ -269,21 +268,7 @@ def CompareBlasius(Nod,dx,dy,i_num,j_num):
     plt.ylabel('Cf',**csfont)
     plt.title('Συντελεστής Τριβής Cf',**csfont)
     plt.legend(['Αριθμητική','Blasius'])   
-    # plt.show()
-    
-    
-    
-        # ----------------ERRROR---------------
-    
-    E=0
-    
-    for k in range(len(Deltay)):
-       
-        E=E+Deltay[k]-Bd[k]
-    
-    Er=E/len(Deltay)
-    
-    print(Er)
+    plt.show()
     
 
 if __name__=="__main__":
@@ -307,7 +292,6 @@ if __name__=="__main__":
     main_loop(Nod,dx,dy)
   
     draw1(Nod)
- 
     
     CompareBlasius(Nod,dx,dy,i_num,j_num)
     
