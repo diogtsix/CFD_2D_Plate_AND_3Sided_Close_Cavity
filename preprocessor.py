@@ -1,6 +1,8 @@
 import numpy as np
 
 class Preprocessor:
+    
+    
     def __init__(self, dx=0.001, dy=0.001, plate_length=10, grid_x_size=12, grid_y_size=1):
         if grid_x_size < plate_length:
             raise ValueError("Grid x length must be greater than or equal to the plate's length.")
