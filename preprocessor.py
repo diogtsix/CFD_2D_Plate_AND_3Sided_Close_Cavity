@@ -3,7 +3,7 @@ import numpy as np
 class Preprocessor:
     
     
-    def __init__(self, dx=0.01, dy=0.01, plate_length=10, grid_x_size=12, grid_y_size=1):
+    def __init__(self, dx=0.01, dy=0.01, plate_length=10, grid_x_size=12, grid_y_size=1, free_flow_velocity = 1):
         if grid_x_size < plate_length:
             raise ValueError("Grid x length must be greater than or equal to the plate's length.")
 
@@ -16,6 +16,7 @@ class Preprocessor:
         self.grid_nodes_y = None
         self.grid_u_velocity = None
         self.grid_v_velocity = None
+        self.free_flow_velocity = free_flow_velocity
 
     def create_grid(self):
         x_nodes = int(self.grid_x_size / self.dx) + 1
@@ -36,6 +37,6 @@ class Preprocessor:
         self.grid_v_velocity = np.zeros_like(self.grid_nodes_y)
         
         # Set boundary conditions
-        self.grid_u_velocity[:, 0:2] = 1.0  # First 2 columns, all rows
+        self.grid_u_velocity[:, 0:2] = self.free_flow_velocity  # First 2 columns, all rows
         self.grid_u_velocity[0, :] = 0.0  # First row, all columns
         

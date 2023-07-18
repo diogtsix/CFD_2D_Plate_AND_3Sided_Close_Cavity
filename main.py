@@ -3,7 +3,7 @@ from solver_explicit import Solver_explicit
 from preprocessor import Preprocessor
 import matplotlib.pyplot as plt
 
-PreProcess = Preprocessor()
+PreProcess = Preprocessor(dx=0.01, dy=0.01,grid_y_size=0.5, free_flow_velocity=1)
 PreProcess.create_grid()
 PreProcess.initialize_velocity_field()
 
