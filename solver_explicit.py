@@ -28,15 +28,15 @@ class Solver_explicit:
         
     def v_i_j_plus_1(self,Dx,Dy,DN,AN,KN):
             
-        first_term=KN.vel[1]
-        second_term=(Dy/Dx)*(DN.vel[0]-AN.vel[0])
+        first_term=KN
+        second_term=(Dy/Dx)*(DN-AN)
         velocity=first_term-second_term
             
         return velocity
         
     def v_i_1(self,Dy,PN):
         
-        velocity = 0.5*Dy*PN.vel[1]
+        velocity = 0.5*Dy*PN
      
         return velocity
             
@@ -47,19 +47,20 @@ class Solver_explicit:
         elements_in_x = shape[1]
         elements_in_y = shape[0]
         
-        for i in range(1, elements_in_x + 1):
-            for j in range(1, elements_in_y + 1):
+        for i in range(1, elements_in_x-1):
+            for j in range(1, elements_in_y-1):
             
 
-                Node = (i,j)
-                left_node = (i-1,j)
-                right_node = (i+1,j)
-                top_node = (i,j+1)
-                bottom_node = (i,j-1) 
+                Node = (j,1)
+                left_node = (j,i-1)
+                right_node = (j,i+1)
+                top_node = (j+1,i)
+                bottom_node = (j-1,i) 
                 
                
                 
-                first_term_vel = self.u_i_plus_1_j(self.dx,self.dy, 
+                first_term_vel = self.u_i_plus_1_j(self.dx,
+                                                   self.dy, 
                                                    self.air_dynamic_viscosity,
                                                    self.grid_u_velocity[left_node],
                                                    self.grid_u_velocity[top_node],
@@ -68,10 +69,22 @@ class Solver_explicit:
                                                    self.grid_v_velocity[Node],
                                                     )
                 
-                  
-        
-a = np.zeros([3,4])
-print(a) 
-b = (2,2)
-print("\n")
-print(a[b])
+
+                
+                self.grid_u_velocity[right_node] = first_term_vel
+                
+                second_term_vel = self.v_i_j_plus_1(self.dx,
+                                                    self.dy,
+                                                    self.grid_u_velocity[right_node],
+                                                    self.grid_u_velocity[left_node],
+                                                    self.grid_v_velocity[bottom_node],
+                                                    )
+                                
+                self.grid_v_velocity[top_node] = second_term_vel
+                
+                if self.grid_nodes_y[Node] == self.dy:
+                    third_term_vel = self.v_i_1(self.dy,
+                                                self.grid_v_velocity[top_node]
+                                                )
+                    
+                    self.grid_v_velocity[Node] = third_term_vel
