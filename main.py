@@ -1,13 +1,15 @@
 import numpy as np
 from solver_explicit import Solver_explicit
+from solver_implicit import Solver_implicit
 from preprocessor import Preprocessor
 import matplotlib.pyplot as plt
 
-PreProcess = Preprocessor(dx=0.01, dy=0.01,grid_y_size=0.5, free_flow_velocity=1)
+
+PreProcess = Preprocessor(dx=0.1, dy=0.1,grid_y_size=1, free_flow_velocity=1)
 PreProcess.create_grid()
 PreProcess.initialize_velocity_field()
 
-Result = Solver_explicit(PreProcess.grid_nodes_x,
+Result = Solver_implicit(PreProcess.grid_nodes_x,
                          PreProcess.grid_nodes_y,
                          PreProcess.grid_u_velocity,
                          PreProcess.grid_v_velocity,
@@ -46,5 +48,5 @@ plt.xlabel('x')
 plt.ylabel('y')
 plt.title('Velocity Field')
 plt.show()
-
+print(Result.grid_u_velocity)
 visualize_matrix(Result.grid_u_velocity)
