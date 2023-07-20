@@ -25,12 +25,14 @@ class CFDApp:
         self.root.mainloop()
 
     def run_explicit_solver(self):
-        dx, dy = self.get_step_sizes()
+        solver_type = 'explicit'
+        dx, dy = self.get_step_sizes(solver_type)
         if dx and dy:
             self.run_solver(Solver_explicit, dx, dy)
 
     def run_implicit_solver(self):
-        dx, dy = self.get_step_sizes()
+        solver_type = 'implicit'
+        dx, dy = self.get_step_sizes(solver_type)
         if dx and dy:
             self.run_solver(Solver_implicit, dx, dy)
 
@@ -50,15 +52,10 @@ class CFDApp:
                               PreProcess.dy)
 
         Result.solve()
-        plt.plot(Result.grid_u_velocity[:,15], Result.grid_nodes_y[:,15])
-
-        plt.xlabel('x')
-        plt.ylabel('y')
-        plt.title('Velocity Field')
-        plt.show()
 
     def compare_solvers(self):
-        dx, dy = self.get_step_sizes()
+        solver_type = 'compare'
+        dx, dy = self.get_step_sizes(solver_type)
         if dx and dy:
             grid_y_size = 0.1
             free_flow_velocity = 1
@@ -91,24 +88,18 @@ class CFDApp:
 
             implicit_solver.solve()
 
-             # Plot the results separately
-            plt.subplot(1, 2, 1)
-            plt.plot(explicit_PreProcess.grid_u_velocity[:,200], explicit_PreProcess.grid_nodes_y[:,200])
-            plt.xlabel('x')
-            plt.ylabel('y')
-            plt.title('Explicit Solver')
-
-            plt.subplot(1, 2, 2)
-            plt.plot(implicit_PreProcess.grid_u_velocity[:,200], implicit_PreProcess.grid_nodes_y[:,200])
-            plt.xlabel('x')
-            plt.ylabel('y')
-            plt.title('Implicit Solver')
-
-            plt.show()
-
-    def get_step_sizes(self):
-        dx = simpledialog.askfloat("Step Size", "Enter step size in x direction:",initialvalue="0.01")
-        dy = simpledialog.askfloat("Step Size", "Enter step size in y direction:",initialvalue="0.01")
+    def get_step_sizes(self, solver_type):
+        if solver_type == 'implicit':
+            dx = simpledialog.askfloat("Step Size", "Enter step size in x direction:",initialvalue="0.1")
+            dy = simpledialog.askfloat("Step Size", "Enter step size in y direction:",initialvalue="0.01")
+        elif solver_type == 'explixit':  
+            dx = simpledialog.askfloat("Step Size", "Enter step size in x direction:",initialvalue="0.001")
+            dy = simpledialog.askfloat("Step Size", "Enter step size in y direction:",initialvalue="0.01")        
+        else:      
+            dx = simpledialog.askfloat("Step Size", "Enter step size in x direction:",initialvalue="0.1")
+            dy = simpledialog.askfloat("Step Size", "Enter step size in y direction:",initialvalue="0.01")        
+        
+            
         return dx, dy
 
 
