@@ -24,8 +24,12 @@ class BlasiusSolution:
         self.grid_nodes_y = grid_nodes_y
         self.x_delta_position = []
         self.y_delta_position = []
+        self.x_delta1_position = []
+        self.y_delta1_position = []
+        self.x_delta2_position = []
+        self.y_delta2_position = []
         
-    def Delta(self):
+    def delta(self):
         
         for i in range(1,self.grid_u_velocity.shape[1]):
             for j in range(0,self.grid_u_velocity.shape[0]+1):
@@ -33,6 +37,24 @@ class BlasiusSolution:
                     self.x_delta_position.append(self.grid_nodes_x[j,i])
                     self.y_delta_position.append(self.grid_nodes_y[j,i])
                     
+        return self.x_delta_position , self.y_delta_position
+                    
+    def delta1_and_delta2(self):
+        delta1, delta2 = 0
+        
+        for i in range(1,self.grid_u_velocity.shape[1]):
+                j = self.grid_u_velocity.shape[0]
+                
+                delta1 = delta1 + (1 - self.grid_u_velocity[j,i])*self.dy
+                
+                delta2 = delta2 +self.grid_u_velocity[j,i]*(1 - self.grid_u_velocity[j,i])*self.dy
+
+                self.x_delta1_position.append(self.grid_nodes_x[j,i])
+                self.y_delta1_position.append(delta1)
+                self.x_delta2_position.append(self.grid_nodes_x[j,i])
+                self.y_delta2_position.append(delta2)
+                
+                delta1 ,delta2 = 0
 
 
         
