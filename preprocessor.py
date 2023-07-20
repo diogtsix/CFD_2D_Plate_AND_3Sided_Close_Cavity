@@ -39,4 +39,4 @@ class Preprocessor:
         # Set boundary conditions
         self.grid_u_velocity[:, 0:2] = self.free_flow_velocity  # First 2 columns, all rows
         self.grid_u_velocity[0, :] = 0  # First row, all columns
-        #self.grid_u_velocity[-1,:] = self.free_flow_velocity #last row free flow
+        self.grid_u_velocity[-1,:] = self.free_flow_velocity #last row free flow

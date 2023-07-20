@@ -1,52 +1,116 @@
-import numpy as np
+import matplotlib.pyplot as plt
+import tkinter as tk
+from tkinter import simpledialog
 from solver_explicit import Solver_explicit
 from solver_implicit import Solver_implicit
 from preprocessor import Preprocessor
-import matplotlib.pyplot as plt
 
 
-PreProcess = Preprocessor(dx=0.1, dy=0.1,grid_y_size=1, free_flow_velocity=1)
-PreProcess.create_grid()
-PreProcess.initialize_velocity_field()
+class CFDApp:
+    def __init__(self):
+        self.root = tk.Tk()
+        self.root.title("CFD Solver")
+        self.root.geometry('300x300')
 
-Result = Solver_implicit(PreProcess.grid_nodes_x,
-                         PreProcess.grid_nodes_y,
-                         PreProcess.grid_u_velocity,
-                         PreProcess.grid_v_velocity,
-                         PreProcess.dx, 
-                         PreProcess.dy)
+        # Create buttons
+        self.explicit_button = tk.Button(self.root, text="Solver_explicit", command=self.run_explicit_solver, padx=10, pady=5)
+        self.explicit_button.pack()
+
+        self.implicit_button = tk.Button(self.root, text="Solver_implicit", command=self.run_implicit_solver, padx=10, pady=5)
+        self.implicit_button.pack()
+
+        self.compare_button = tk.Button(self.root, text="Compare", command=self.compare_solvers, padx=10, pady=5)
+        self.compare_button.pack()
+
+        self.root.mainloop()
+
+    def run_explicit_solver(self):
+        dx, dy = self.get_step_sizes()
+        if dx and dy:
+            self.run_solver(Solver_explicit, dx, dy)
+
+    def run_implicit_solver(self):
+        dx, dy = self.get_step_sizes()
+        if dx and dy:
+            self.run_solver(Solver_implicit, dx, dy)
+
+    def run_solver(self, solver_class, dx, dy):
+        grid_y_size = 0.1
+        free_flow_velocity = 1
+
+        PreProcess = Preprocessor(dx=dx, dy=dy, grid_y_size=grid_y_size, free_flow_velocity=free_flow_velocity)
+        PreProcess.create_grid()
+        PreProcess.initialize_velocity_field()
+
+        Result = solver_class(PreProcess.grid_nodes_x,
+                              PreProcess.grid_nodes_y,
+                              PreProcess.grid_u_velocity,
+                              PreProcess.grid_v_velocity,
+                              PreProcess.dx,
+                              PreProcess.dy)
+
+        Result.solve()
+        plt.plot(Result.grid_u_velocity[:,15], Result.grid_nodes_y[:,15])
+
+        plt.xlabel('x')
+        plt.ylabel('y')
+        plt.title('Velocity Field')
+        plt.show()
+
+    def compare_solvers(self):
+        dx, dy = self.get_step_sizes()
+        if dx and dy:
+            grid_y_size = 0.1
+            free_flow_velocity = 1
+
+        # Create Preprocessor instance for explicit solver
+            explicit_PreProcess = Preprocessor(dx=dx, dy=dy, grid_y_size=grid_y_size, free_flow_velocity=free_flow_velocity)
+            explicit_PreProcess.create_grid()
+            explicit_PreProcess.initialize_velocity_field()
+
+            explicit_solver = Solver_explicit(explicit_PreProcess.grid_nodes_x,
+                                          explicit_PreProcess.grid_nodes_y,
+                                          explicit_PreProcess.grid_u_velocity,
+                                          explicit_PreProcess.grid_v_velocity,
+                                          explicit_PreProcess.dx,
+                                          explicit_PreProcess.dy)
+
+            explicit_solver.solve()
+
+        # Create Preprocessor instance for implicit solver
+            implicit_PreProcess = Preprocessor(dx=dx, dy=dy, grid_y_size=grid_y_size, free_flow_velocity=free_flow_velocity)
+            implicit_PreProcess.create_grid()
+            implicit_PreProcess.initialize_velocity_field()
+
+            implicit_solver = Solver_implicit(implicit_PreProcess.grid_nodes_x,
+                                          implicit_PreProcess.grid_nodes_y,
+                                          implicit_PreProcess.grid_u_velocity,
+                                          implicit_PreProcess.grid_v_velocity,
+                                          implicit_PreProcess.dx,
+                                          implicit_PreProcess.dy)
+
+            implicit_solver.solve()
+
+             # Plot the results separately
+            plt.subplot(1, 2, 1)
+            plt.plot(explicit_PreProcess.grid_u_velocity[:,200], explicit_PreProcess.grid_nodes_y[:,200])
+            plt.xlabel('x')
+            plt.ylabel('y')
+            plt.title('Explicit Solver')
+
+            plt.subplot(1, 2, 2)
+            plt.plot(implicit_PreProcess.grid_u_velocity[:,200], implicit_PreProcess.grid_nodes_y[:,200])
+            plt.xlabel('x')
+            plt.ylabel('y')
+            plt.title('Implicit Solver')
+
+            plt.show()
+
+    def get_step_sizes(self):
+        dx = simpledialog.askfloat("Step Size", "Enter step size in x direction:",initialvalue="0.01")
+        dy = simpledialog.askfloat("Step Size", "Enter step size in y direction:",initialvalue="0.01")
+        return dx, dy
 
 
-def visualize_matrix(matrix):
-    shape = np.shape(matrix)
-    rows, cols = shape[0], shape[1]
-
-    # Flatten the matrix to get a 1D array of values
-    values = matrix.flatten()
-
-    # Generate coordinates for each point in the scatter plot
-    x_coords, y_coords = np.meshgrid(range(cols), range(rows))
-
-    # Plot the scatter plot
-    plt.scatter(x_coords, y_coords, c=values, cmap='jet')
-    plt.colorbar()
-
-    # Set the axis limits and labels
-    plt.xlim(0, cols-1)
-    plt.ylim(0, rows-1)
-    plt.xlabel('Column Index')
-    plt.ylabel('Row Index')
-
-    # Show the plot
-    plt.show()
-
-Result.solve()
-
-plt.quiver(PreProcess.grid_nodes_x, PreProcess.grid_nodes_y,
-           Result.grid_u_velocity, Result.grid_v_velocity)
-plt.xlabel('x')
-plt.ylabel('y')
-plt.title('Velocity Field')
-plt.show()
-print(Result.grid_u_velocity)
-visualize_matrix(Result.grid_u_velocity)
+if __name__ == "__main__":
+    CFDApp()
