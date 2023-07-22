@@ -14,6 +14,12 @@ class Solver_explicit:
         self.grid_v_velocity = grid_v_velocity
         self.dx = dx
         self.dy = dy
+        self.x_delta_position = []
+        self.y_delta_position = []
+        self.x_delta1_position = []
+        self.y_delta1_position = []
+        self.x_delta2_position = []
+        self.y_delta2_position = []
     
 
         
@@ -88,3 +94,30 @@ class Solver_explicit:
                                                 )
                     
                     self.grid_v_velocity[Node] = third_term_vel
+    
+    def Blasius_delta(self):
+        
+        for i in range(1,self.grid_u_velocity.shape[1]):
+            for j in range(0,self.grid_u_velocity.shape[0]+1):
+                if self.grid_u_velocity[j,i] >= 0.99:
+                    self.x_delta_position.append(self.grid_nodes_x[j,i])
+                    self.y_delta_position.append(self.grid_nodes_y[j,i])
+                    
+        return self.x_delta_position , self.y_delta_position
+                    
+    def Blasius_delta1_and_delta2(self):
+        delta1, delta2 = 0
+        
+        for i in range(1,self.grid_u_velocity.shape[1]):
+                j = self.grid_u_velocity.shape[0]
+                
+                delta1 = delta1 + (1 - self.grid_u_velocity[j,i])*self.dy
+                
+                delta2 = delta2 +self.grid_u_velocity[j,i]*(1 - self.grid_u_velocity[j,i])*self.dy
+
+                self.x_delta1_position.append(self.grid_nodes_x[j,i])
+                self.y_delta1_position.append(delta1)
+                self.x_delta2_position.append(self.grid_nodes_x[j,i])
+                self.y_delta2_position.append(delta2)
+                
+                delta1 ,delta2 = 0

@@ -29,6 +29,8 @@ class CFDApp:
         dx, dy = self.get_step_sizes(solver_type)
         if dx and dy:
             self.run_solver(Solver_explicit, dx, dy)
+            
+            
 
     def run_implicit_solver(self):
         solver_type = 'implicit'
@@ -52,6 +54,7 @@ class CFDApp:
                               PreProcess.dy)
 
         Result.solve()
+        print(Result.grid_u_velocity)
 
     def compare_solvers(self):
         solver_type = 'compare'
