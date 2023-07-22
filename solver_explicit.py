@@ -20,6 +20,9 @@ class Solver_explicit:
         self.y_delta1_position = []
         self.x_delta2_position = []
         self.y_delta2_position = []
+        self.t_wall = [] 
+        self.Cf_friction_coeff = []
+        self.Cf_x_cordinate = []
     
 
         
@@ -98,7 +101,7 @@ class Solver_explicit:
     def Blasius_delta(self):
         
         for i in range(1,self.grid_u_velocity.shape[1]):
-            for j in range(0,self.grid_u_velocity.shape[0]+1):
+            for j in range(0,self.grid_u_velocity.shape[0]):
                 if self.grid_u_velocity[j,i] >= 0.99:
                     self.x_delta_position.append(self.grid_nodes_x[j,i])
                     self.y_delta_position.append(self.grid_nodes_y[j,i])
@@ -106,10 +109,11 @@ class Solver_explicit:
         return self.x_delta_position , self.y_delta_position
                     
     def Blasius_delta1_and_delta2(self):
-        delta1, delta2 = 0
+        delta1 = 0
+        delta2 = 0
         
         for i in range(1,self.grid_u_velocity.shape[1]):
-                j = self.grid_u_velocity.shape[0]
+                j = self.grid_u_velocity.shape[0]-1
                 
                 delta1 = delta1 + (1 - self.grid_u_velocity[j,i])*self.dy
                 
@@ -120,4 +124,26 @@ class Solver_explicit:
                 self.x_delta2_position.append(self.grid_nodes_x[j,i])
                 self.y_delta2_position.append(delta2)
                 
-                delta1 ,delta2 = 0
+                delta1 = 0
+                delta2 = 0
+                
+    def Blasius_t_wall_and_Cf(self):
+        t = 0 
+        for i in range(1,self.grid_u_velocity.shape[1]):
+            for j in range(0,self.grid_v_velocity.shape[0]):
+                
+                if self.grid_nodes_y[j,i] == 0:
+                    u0 = self.grid_u_velocity[j,i]
+                if self.grid_nodes_y[j,i] == self.dy:
+                    u1 = self.grid_u_velocity[j,i]
+                    t = 1
+                if t == 1:
+                    self.t_wall.append(self.air_dynamic_viscosity*((u1-u0)/self.dy))
+                    ll = 2*self.air_dynamic_viscosity*((u1-u0)/self.dy)
+                    ll = ll/self.density
+                    self.Cf_friction_coeff.append(ll)
+                    self.Cf_x_cordinate.append(self.grid_nodes_x[j,i])
+    
+
+                
+    

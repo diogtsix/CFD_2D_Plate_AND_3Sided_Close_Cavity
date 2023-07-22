@@ -6,55 +6,32 @@ class BlasiusSolution:
     air_dynamic_viscosity = 1.789*(10**(-5))
     density = 1.225 #kg/m3
     
-    def __init__(self, plate_length, plate_Height, dx, dy, grid_x_size, 
-                 grid_y_size,grid_nodes_x,grid_nodes_y):
+    def __init__(self, number_of_columms,dx,dy):
         
-        if grid_x_size < plate_length:
-            raise ValueError("Grid x length must be greater than or equal to the plate's length.")
-
-        self.plate_length = plate_length
-        self.plate_Height = plate_Height
+        self.number_of_columms = number_of_columms
         self.dx = dx
-        self.dy = dy
-        self.grid_x_size = grid_x_size
-        self.grid_y_size = grid_y_size
-        self.grid_u_velocity = None
-        self.grid_v_velocity = None
-        self.grid_nodes_x = grid_nodes_x
-        self.grid_nodes_y = grid_nodes_y
-        self.x_delta_position = []
-        self.y_delta_position = []
-        self.x_delta1_position = []
-        self.y_delta1_position = []
-        self.x_delta2_position = []
-        self.y_delta2_position = []
+        self.dy = dy        
+        self.Reynolds_coeff = np.zeros((number_of_columms,1))
+        self.delta = np.zeros((number_of_columms,1))
+        self.delta1 = np.zeros((number_of_columms,1))
+        self.delta2 = np.zeros((number_of_columms,1))
+        self.cf_friction_coeff = np.zeros((number_of_columms,1))
+        self.x_cordinate = np.zeros((number_of_columms,1))
         
-    def delta(self):
-        
-        for i in range(1,self.grid_u_velocity.shape[1]):
-            for j in range(0,self.grid_u_velocity.shape[0]+1):
-                if self.grid_u_velocity[j,i] >= 0.99:
-                    self.x_delta_position.append(self.grid_nodes_x[j,i])
-                    self.y_delta_position.append(self.grid_nodes_y[j,i])
-                    
-        return self.x_delta_position , self.y_delta_position
-                    
-    def delta1_and_delta2(self):
-        delta1, delta2 = 0
-        
-        for i in range(1,self.grid_u_velocity.shape[1]):
-                j = self.grid_u_velocity.shape[0]
-                
-                delta1 = delta1 + (1 - self.grid_u_velocity[j,i])*self.dy
-                
-                delta2 = delta2 +self.grid_u_velocity[j,i]*(1 - self.grid_u_velocity[j,i])*self.dy
 
-                self.x_delta1_position.append(self.grid_nodes_x[j,i])
-                self.y_delta1_position.append(delta1)
-                self.x_delta2_position.append(self.grid_nodes_x[j,i])
-                self.y_delta2_position.append(delta2)
-                
-                delta1 ,delta2 = 0
 
+
+    def blasius_exact_solution(self):
+        
+        for ii in range(1,self.number_of_columms):
+            self.Reynolds[ii,0] = (self.density*ii*self.dx)/self.air_dynamic_viscosity
+            self.delta[ii,0] = 5*ii*self.dx/(self.Reynolds[ii,0]**0.5)
+            self.delta1[ii,0] = 1.72*ii*self.dx/(self.Reynolds[ii,0]**0.5)
+            self.delta2[ii,0] = 0.664*ii*self.dx/(self.Reynolds[ii,0]**0.5)
+            self.cf_friction_coeff[ii,0] = 0.664/(self.Reynolds[ii,0]**0.5)
+            self.x_cordinate[ii,0] = ii*self.dx+1
+        self.x_cordinate[0,0] = self.x_cordinate[0,0]+1
+            
+        
 
         
