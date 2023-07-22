@@ -4,7 +4,7 @@ from tkinter import simpledialog
 from solver_explicit import Solver_explicit
 from solver_implicit import Solver_implicit
 from preprocessor import Preprocessor
-
+from postprocessor import PostProcessor  # Import the PostProcessor class
 
 class CFDApp:
     def __init__(self):
@@ -28,16 +28,24 @@ class CFDApp:
         solver_type = 'explicit'
         dx, dy = self.get_step_sizes(solver_type)
         if dx and dy:
-            self.run_solver(Solver_explicit, dx, dy)
+            solver_type = "explicit"
+            self.run_solver(Solver_explicit, dx, dy, solver_type)
+            
+
+
+            
+            
 
     def run_implicit_solver(self):
         solver_type = 'implicit'
         dx, dy = self.get_step_sizes(solver_type)
         if dx and dy:
-            self.run_solver(Solver_implicit, dx, dy)
+            solver_type = "implicit"
+            self.run_solver(Solver_implicit, dx, dy, solver_type)
 
-    def run_solver(self, solver_class, dx, dy):
-        grid_y_size = 0.1
+
+    def run_solver(self, solver_class, dx, dy, solver_type):
+        grid_y_size = 0.09
         free_flow_velocity = 1
 
         PreProcess = Preprocessor(dx=dx, dy=dy, grid_y_size=grid_y_size, free_flow_velocity=free_flow_velocity)
@@ -52,6 +60,11 @@ class CFDApp:
                               PreProcess.dy)
 
         Result.solve()
+        
+        # Visualize the results using the PostProcessor class
+        post_processor = PostProcessor(Result.grid_nodes_x, Result.grid_nodes_y, Result.grid_u_velocity, solver_type = solver_type)
+        post_processor.plot_colored_velocity_field()
+        post_processor.plot_u_velocity_profiles(x_values=[2, 4, 6, 8, 10])
 
     def compare_solvers(self):
         solver_type = 'compare'
@@ -87,16 +100,21 @@ class CFDApp:
                                           implicit_PreProcess.dy)
 
             implicit_solver.solve()
+            
+            # Visualize the results of the implicit solver using the PostProcessor class
+            implicit_post_processor = PostProcessor(implicit_solver.grid_nodes_x, implicit_solver.grid_nodes_y, implicit_solver.grid_u_velocity)
+            implicit_post_processor.plot_colored_velocity_field()
+            implicit_post_processor.plot_u_velocity_profiles(x_values=[2, 4, 6, 8, 10])
 
     def get_step_sizes(self, solver_type):
         if solver_type == 'implicit':
-            dx = simpledialog.askfloat("Step Size", "Enter step size in x direction:",initialvalue="0.1")
+            dx = simpledialog.askfloat("Step Size", "Enter step size in x direction:",initialvalue="0.01")
             dy = simpledialog.askfloat("Step Size", "Enter step size in y direction:",initialvalue="0.01")
         elif solver_type == 'explixit':  
-            dx = simpledialog.askfloat("Step Size", "Enter step size in x direction:",initialvalue="0.001")
+            dx = simpledialog.askfloat("Step Size", "Enter step size in x direction:",initialvalue="0.01")
             dy = simpledialog.askfloat("Step Size", "Enter step size in y direction:",initialvalue="0.01")        
         else:      
-            dx = simpledialog.askfloat("Step Size", "Enter step size in x direction:",initialvalue="0.1")
+            dx = simpledialog.askfloat("Step Size", "Enter step size in x direction:",initialvalue="0.01")
             dy = simpledialog.askfloat("Step Size", "Enter step size in y direction:",initialvalue="0.01")        
         
             

@@ -6,7 +6,8 @@ class Solver_explicit:
     air_dynamic_viscosity = 1.789*(10**(-5))
     density = 1.225 #kg/m3
                                    
-    def __init__(self,grid_nodes_x,grid_nodes_y,grid_u_velocity,grid_v_velocity,dx,dy):
+    def __init__(self,grid_nodes_x,grid_nodes_y,
+                 grid_u_velocity,grid_v_velocity,dx,dy):
         
         self.grid_nodes_x = grid_nodes_x
         self.grid_nodes_y = grid_nodes_y
@@ -14,6 +15,15 @@ class Solver_explicit:
         self.grid_v_velocity = grid_v_velocity
         self.dx = dx
         self.dy = dy
+        self.x_delta_position = []
+        self.y_delta_position = []
+        self.x_delta1_position = []
+        self.y_delta1_position = []
+        self.x_delta2_position = []
+        self.y_delta2_position = []
+        self.t_wall = [] 
+        self.Cf_friction_coeff = []
+        self.Cf_x_cordinate = []
     
 
         
@@ -88,3 +98,66 @@ class Solver_explicit:
                                                 )
                     
                     self.grid_v_velocity[Node] = third_term_vel
+    
+    def Blasius_delta(self):
+        dd = 0
+        ddd = 1
+        for i in range(1,self.grid_u_velocity.shape[1]):
+            for j in range(0,self.grid_u_velocity.shape[0]):
+                if self.grid_nodes_x[j,i] < 10: # this is vald only for plate_length = 10
+                    if self.grid_u_velocity[j,i] >= 0.99 and dd==0:
+                        self.x_delta_position.append(self.grid_nodes_x[j,i])
+                        self.y_delta_position.append(self.grid_nodes_y[j,i])
+                    
+                        dd = 1
+                        ddd = 0
+                    if self.grid_nodes_y[j,i] == 0 and ddd == 0:
+                        dd = 0
+                        ddd = 1    
+        return self.x_delta_position , self.y_delta_position
+                    
+    def Blasius_delta1_and_delta2(self):
+        delta1 = 0
+        delta2 = 0
+        dd =0        
+        for i in range(1,self.grid_u_velocity.shape[1]):
+            for j in range(0,self.grid_u_velocity.shape[0]):
+                
+                if self.grid_nodes_x[j,i] > 0.01*self.dx and self.grid_nodes_x[j,i]< 10:
+                    
+                    delta1 = delta1 + (1 - self.grid_u_velocity[j,i])*self.dy
+                
+                    delta2 = delta2 +self.grid_u_velocity[j,i]*(1 - self.grid_u_velocity[j,i])*self.dy
+                    if j == self.grid_u_velocity.shape[0]-1 and dd == 0:
+                    
+                        self.x_delta1_position.append(self.grid_nodes_x[j,i])
+                        self.y_delta1_position.append(delta1)
+                        self.x_delta2_position.append(self.grid_nodes_x[j,i])
+                        self.y_delta2_position.append(delta2)
+                        dd = 1
+                        delta1 = 0
+                        delta2 = 0
+                
+                    if dd == 1 and self.grid_nodes_y[j,i] ==0:
+                        dd = 0
+                
+    def Blasius_t_wall_and_Cf(self):
+        t = 0 
+        for i in range(1,self.grid_u_velocity.shape[1]):
+            for j in range(0,self.grid_v_velocity.shape[0]):
+                
+                if self.grid_nodes_y[j,i] == 0:
+                    u0 = self.grid_u_velocity[j,i]
+                if self.grid_nodes_y[j,i] == self.dy:
+                    u1 = self.grid_u_velocity[j,i]
+                    t = 1
+                if t == 1:
+                    self.t_wall.append(self.air_dynamic_viscosity*((u1-u0)/self.dy))
+                    ll = 2*self.air_dynamic_viscosity*((u1-u0)/self.dy)
+                    ll = ll/self.density
+                    self.Cf_friction_coeff.append(ll)
+                    self.Cf_x_cordinate.append(self.grid_nodes_x[j,i])
+    
+
+                
+    
