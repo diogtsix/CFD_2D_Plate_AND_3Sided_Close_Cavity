@@ -11,7 +11,7 @@ class BlasiusSolution:
         self.number_of_columms = number_of_columms
         self.dx = dx
         self.dy = dy        
-        self.Reynolds_coeff = np.zeros((number_of_columms,1))
+        self.Reynolds = np.zeros((number_of_columms,1))
         self.delta = np.zeros((number_of_columms,1))
         self.delta1 = np.zeros((number_of_columms,1))
         self.delta2 = np.zeros((number_of_columms,1))
