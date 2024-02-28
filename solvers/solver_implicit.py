@@ -28,10 +28,10 @@ class Solver_implicit:
         nodes_on_x_axis =round(self.grid_nodes_x[0,-1]/self.dx)
 
         # Fix the size of LHS_constants to (nodes_on_x_axis - 2, 1)
-        LHS_constants = np.zeros((nodes_on_y_axis - 1, 1))
-        lower_diagonal = np.ones((nodes_on_y_axis - 2, 1))
-        diagonal = np.ones((nodes_on_y_axis - 1, 1))
-        upper_diagonal = np.ones((nodes_on_y_axis - 2, 1))
+        LHS_constants = np.zeros((nodes_on_y_axis - 2, 1))
+        lower_diagonal = np.ones((nodes_on_y_axis - 3, 1))
+        diagonal = np.ones((nodes_on_y_axis - 2, 1))
+        upper_diagonal = np.ones((nodes_on_y_axis - 3, 1))
 
 
         xx = self.dx**2
@@ -40,8 +40,8 @@ class Solver_implicit:
         s1 = 0
 
         # Correct the range of iteration here
-        for i in range(1, nodes_on_x_axis):
-            for j in range(1, nodes_on_y_axis):
+        for i in range(1, nodes_on_x_axis - 2):
+            for j in range(1, nodes_on_y_axis - 2):
                 A2 = self.grid_v_velocity[j, i] * xy - 2 * xx
                 B2 = 4 * self.grid_u_velocity[j, i] * yy + 4 * xx
                 C2 = -self.grid_v_velocity[j, i] * xy - 2 * xx
@@ -75,7 +75,7 @@ class Solver_implicit:
         
             # Apply Thomas algorithm to solve the tridiagonal system
             u = Solver_implicit.Thomas(lower_diagonal, diagonal, upper_diagonal, LHS_constants)
-            self.grid_u_velocity[1:nodes_on_y_axis,i+1:i+2] = u
+            self.grid_u_velocity[1:nodes_on_y_axis - 1,i+1:i+2] = u
         
         # Update v-velocity component for next time step
             self.v_i_plus_1(nodes_on_x_axis)

@@ -46,6 +46,6 @@ class Preprocessor:
             self.grid_u_velocity[0, i, mask] = 0
 
     # Set velocity to free_flow_velocity for the last row (bottom boundary)
-        self.grid_u_velocity[-1, :] = self.free_flow_velocity
+     #    self.grid_u_velocity[-1, :] = self.free_flow_velocity
         
       
