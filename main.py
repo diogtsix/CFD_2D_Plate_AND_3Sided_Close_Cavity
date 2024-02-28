@@ -65,7 +65,7 @@ class CFDApp:
         # Visualize the results using the PostProcessor class
         post_processor = PostProcessor(Result.grid_nodes_x, Result.grid_nodes_y, Result.grid_u_velocity, solver_type = solver_type)
         post_processor.plot_colored_velocity_field()
-        post_processor.plot_u_velocity_profiles(x_values=[2, 4, 6, 8, 10])
+        post_processor.plot_u_velocity_profiles(x_values=[2, 3, 4, 5,  6, 7,  8, 9, 10])
 
     def compare_solvers(self):
         solver_type = 'compare'
