@@ -42,10 +42,10 @@ class Preprocessor:
 
     # Set velocity to 0 for points on the top boundary where grid_nodes_x is between 0 and 10
         for i in range(self.grid_u_velocity.shape[1]):
-            mask = (self.grid_nodes_x[0, i] >= 1) & (self.grid_nodes_x[0, i] <= 10 +1)
+            mask = (self.grid_nodes_x[0, i] >= 1 - self.dx) & (self.grid_nodes_x[0, i] <= 10 +1)
             self.grid_u_velocity[0, i, mask] = 0
 
     # Set velocity to free_flow_velocity for the last row (bottom boundary)
-     #   self.grid_u_velocity[-1, :] = self.free_flow_velocity
+        self.grid_u_velocity[-1, :] = self.free_flow_velocity
         
       

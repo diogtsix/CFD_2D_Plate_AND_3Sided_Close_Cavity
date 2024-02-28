@@ -11,12 +11,19 @@ class PostProcessor:
 
     def plot_colored_velocity_field(self):
         plt.figure(figsize=(8, 6))
-        plt.pcolormesh(self.grid_nodes_x, self.grid_nodes_y, self.grid_u_velocity, cmap='viridis')
+        
+        mask = (self.grid_nodes_x >= 0.5) & (self.grid_nodes_x <= 10)
+        
+        # Apply mask to u_velocity, setting values outside the range to NaN so they won't be colored
+        filtered_u_velocity = np.where(mask, self.grid_u_velocity, np.nan)
+    
+        plt.pcolormesh(self.grid_nodes_x, self.grid_nodes_y, filtered_u_velocity, cmap='viridis')
 
         plt.colorbar(label='u-velocity')
         plt.xlabel('x')
         plt.ylabel('y')
         plt.title('Colored Velocity Field (u-velocity)')
+        plt.xlim(0, 10)  # Set the x-axis range to 0-11 meters
         plt.grid()
         plt.show()
 

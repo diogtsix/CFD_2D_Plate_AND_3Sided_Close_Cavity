@@ -71,7 +71,7 @@ class CFDApp:
         solver_type = 'compare'
         dx, dy = self.get_step_sizes(solver_type)
         if dx and dy:
-            grid_y_size = 0.1
+            grid_y_size = 0.09
             free_flow_velocity = 1
 
         # Create Preprocessor instance for explicit solver
@@ -114,7 +114,7 @@ class CFDApp:
             dx = simpledialog.askfloat("Step Size", "Enter step size in x direction:",initialvalue="0.01")
             dy = simpledialog.askfloat("Step Size", "Enter step size in y direction:",initialvalue="0.01")
         elif solver_type == 'explixit':  
-            dx = simpledialog.askfloat("Step Size", "Enter step size in x direction:",initialvalue="0.01")
+            dx = simpledialog.askfloat("Step Size", "Enter step size in x direction:",initialvalue="0.005")
             dy = simpledialog.askfloat("Step Size", "Enter step size in y direction:",initialvalue="0.01")        
         else:      
             dx = simpledialog.askfloat("Step Size", "Enter step size in x direction:",initialvalue="0.01")
