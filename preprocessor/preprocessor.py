@@ -29,17 +29,9 @@ class Preprocessor:
 
         return self.grid_nodes_x, self.grid_nodes_y
     
-    def initialize_velocity_field(self):
-        self.create_grid()
-
-        # Initialize velocity fields with zeros
-        self.grid_u_velocity = np.ones_like(self.grid_nodes_x)
-        self.grid_v_velocity = np.zeros_like(self.grid_nodes_y)
         
     def initialize_velocity_field(self):
         self.create_grid()   
-        
-           
 
     # Initialize velocity fields with zeros
         self.grid_u_velocity = np.ones_like(self.grid_nodes_x)

@@ -23,6 +23,7 @@ class CFDApp:
         self.compare_button.pack()
 
         self.root.mainloop()
+        
 
     def run_explicit_solver(self):
         solver_type = 'explicit'
@@ -105,6 +106,8 @@ class CFDApp:
             implicit_post_processor = PostProcessor(implicit_solver.grid_nodes_x, implicit_solver.grid_nodes_y, implicit_solver.grid_u_velocity)
             implicit_post_processor.plot_colored_velocity_field()
             implicit_post_processor.plot_u_velocity_profiles(x_values=[2, 4, 6, 8, 10])
+
+
 
     def get_step_sizes(self, solver_type):
         if solver_type == 'implicit':
