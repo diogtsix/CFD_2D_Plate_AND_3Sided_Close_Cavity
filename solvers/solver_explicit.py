@@ -61,7 +61,7 @@ class Solver_explicit:
             for j in range(1, elements_in_y-1):
             
 
-                Node = (j,1)
+                Node = (j,i)
                 left_node = (j,i-1)
                 right_node = (j,i+1)
                 top_node = (j+1,i)
