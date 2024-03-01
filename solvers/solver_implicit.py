@@ -4,6 +4,7 @@ class Solver_implicit:
   
     air_dynamic_viscosity = 1.789*(10**(-5))
     density = 1.225 #kg/m3
+    viscosity = air_dynamic_viscosity/ density
       
     def __init__(self, grid_nodes_x, grid_nodes_y, grid_u_velocity, grid_v_velocity, dx, dy):
         self.grid_nodes_x = grid_nodes_x
@@ -24,14 +25,13 @@ class Solver_implicit:
         
 
     def u_i_plus_1_system_eq(self):
-        nodes_on_y_axis = round(self.grid_nodes_y[-1,0]/self.dy)
-        nodes_on_x_axis =round(self.grid_nodes_x[0,-1]/self.dx)
+        nodes_on_y_axis = np.shape(self.grid_u_velocity)[0] - 1
+        nodes_on_x_axis = np.shape(self.grid_u_velocity)[1] - 1
 
-        # Fix the size of LHS_constants to (nodes_on_x_axis - 2, 1)
-        LHS_constants = np.zeros((nodes_on_y_axis - 2, 1))
-        lower_diagonal = np.ones((nodes_on_y_axis - 3, 1))
-        diagonal = np.ones((nodes_on_y_axis - 2, 1))
-        upper_diagonal = np.ones((nodes_on_y_axis - 3, 1))
+        LHS_constants = np.zeros((nodes_on_y_axis - 1, 1))
+        lower_diagonal = np.ones((nodes_on_y_axis - 2, 1))
+        diagonal = np.ones((nodes_on_y_axis - 1, 1))
+        upper_diagonal = np.ones((nodes_on_y_axis - 2, 1))
 
 
         xx = self.dx**2
@@ -40,11 +40,11 @@ class Solver_implicit:
         s1 = 0
 
         # Correct the range of iteration here
-        for i in range(1, nodes_on_x_axis - 2):
-            for j in range(1, nodes_on_y_axis - 2):
-                A2 = self.grid_v_velocity[j, i] * xy - 2 * xx
-                B2 = 4 * self.grid_u_velocity[j, i] * yy + 4 * xx
-                C2 = -self.grid_v_velocity[j, i] * xy - 2 * xx
+        for i in range(1, nodes_on_x_axis ): # i = columns
+            for j in range(1, nodes_on_y_axis ): # j = rows
+                A2 = self.grid_v_velocity[j, i] * xy - 2 * self.dx * self.viscosity
+                B2 = 4 * self.grid_u_velocity[j, i] * yy + 4 * self.dx * self.viscosity
+                C2 = -self.grid_v_velocity[j, i] * xy - 2 *  self.dx * self.viscosity
 
                 diagonal[s1, 0] = B2
 
@@ -53,7 +53,7 @@ class Solver_implicit:
                 if j != (nodes_on_y_axis - 1):
                     upper_diagonal[s1, 0] = A2
 
-                D2 = 4 * yy * self.grid_v_velocity[j, i] - 4 * xx
+                D2 = 4 * yy * self.grid_v_velocity[j, i] - 4 * self.dx * self.viscosity
 
                 K1 = D2 * self.grid_u_velocity[j, i]
                 K2 = A2 * self.grid_u_velocity[j + 1, i]
@@ -62,9 +62,9 @@ class Solver_implicit:
                 LHS_constants[s1, 0] = K1 - K2 - K3
 
                 if j == 1:
-                    l = C2 * self.grid_u_velocity[j - 1, i + 1]
+                    l =  C2 * self.grid_u_velocity[j - 1, i + 1]
                 elif j == nodes_on_y_axis - 1:
-                    l = -A2 * self.grid_u_velocity[j + 1, i + 1]
+                    l =  A2 * self.grid_u_velocity[j + 1, i + 1]
                 else:
                     l = 0
      
@@ -73,17 +73,24 @@ class Solver_implicit:
                 s1 += 1   
             s1 = 0
         
+    
             # Apply Thomas algorithm to solve the tridiagonal system
             u = Solver_implicit.Thomas(lower_diagonal, diagonal, upper_diagonal, LHS_constants)
-            self.grid_u_velocity[1:nodes_on_y_axis - 1,i+1:i+2] = u
+            u=np.transpose(u)
+            self.grid_u_velocity[1:nodes_on_y_axis ,i + 1] = u
         
         # Update v-velocity component for next time step
-            self.v_i_plus_1(nodes_on_x_axis)
+            self.v_i_plus_1(i, nodes_on_y_axis)
             
-    def v_i_plus_1(self, nodes_on_x_axis):
-        for jj in range(1, self.grid_nodes_y.shape[0] - 1):
-            Lamda = -(2 * (self.dy / self.dx)) * (self.grid_u_velocity[jj, nodes_on_x_axis - 1] - self.grid_u_velocity[jj, nodes_on_x_axis - 2]) - (self.grid_v_velocity[jj + 1, nodes_on_x_axis - 1] - self.grid_v_velocity[jj, nodes_on_x_axis - 1])
-            self.grid_v_velocity[jj + 1, nodes_on_x_axis - 1] = Lamda + self.grid_v_velocity[jj, nodes_on_x_axis - 1]
+    def v_i_plus_1(self, nodes_on_x_axis, nodes_on_y_axis):
+        
+        for jj in range(0, nodes_on_y_axis):
+            
+            deltau = self.grid_u_velocity[jj, nodes_on_x_axis +1] - self.grid_u_velocity[jj, nodes_on_x_axis]
+            deltav = self.grid_v_velocity[jj + 1, nodes_on_x_axis] - self.grid_v_velocity[jj, nodes_on_x_axis]
+            factor = 2 * self.dy / self.dx
+            Lamda =  factor * deltau - deltav
+            self.grid_v_velocity[jj + 1, nodes_on_x_axis + 1] = self.grid_v_velocity[jj, nodes_on_x_axis + 1] - Lamda
     
     def solve(self):
         self.u_i_plus_1_system_eq()
@@ -162,7 +169,7 @@ class Solver_implicit:
                     u1 = self.grid_u_velocity[j,i]
                     t = 1
                 if t == 1:
-                    self.t_wall.append(self.air_dynamic_viscosity*((u1-u0)/self.dy))
+                    self.t_wall.append(self.viscosity*((u1-u0)/self.dy))
                     ll = 2*self.air_dynamic_viscosity*((u1-u0)/self.dy)
                     ll = ll/self.density
                     self.Cf_friction_coeff.append(ll)

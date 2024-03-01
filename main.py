@@ -103,16 +103,24 @@ class CFDApp:
             implicit_solver.solve()
             
             # Visualize the results of the implicit solver using the PostProcessor class
-            implicit_post_processor = PostProcessor(implicit_solver.grid_nodes_x, implicit_solver.grid_nodes_y, implicit_solver.grid_u_velocity)
+            implicit_post_processor = PostProcessor(implicit_solver.grid_nodes_x, implicit_solver.grid_nodes_y, implicit_solver.grid_u_velocity, 
+                                                     solver_type = 'implicit')
             implicit_post_processor.plot_colored_velocity_field()
-            implicit_post_processor.plot_u_velocity_profiles(x_values=[2, 4, 6, 8, 10])
+            implicit_post_processor.plot_u_velocity_profiles(x_values=[2, 3, 4, 5,  6, 7,  8, 9, 10])
+            
+            # Visualize the results of the explicit solver using the PostProcessor class
+            explicit_post_processor = PostProcessor(explicit_solver.grid_nodes_x, explicit_solver.grid_nodes_y, explicit_solver.grid_u_velocity, 
+                                                     solver_type = 'explixit')
+            explicit_post_processor.plot_colored_velocity_field()
+            explicit_post_processor.plot_u_velocity_profiles(x_values=[2, 3, 4, 5,  6, 7,  8, 9, 10])
+
 
 
 
     def get_step_sizes(self, solver_type):
         if solver_type == 'implicit':
-            dx = simpledialog.askfloat("Step Size", "Enter step size in x direction:",initialvalue="0.005")
-            dy = simpledialog.askfloat("Step Size", "Enter step size in y direction:",initialvalue="0.01")
+            dx = simpledialog.askfloat("Step Size", "Enter step size in x direction:",initialvalue="0.1")
+            dy = simpledialog.askfloat("Step Size", "Enter step size in y direction:",initialvalue="0.001")
         elif solver_type == 'explixit':  
             dx = simpledialog.askfloat("Step Size", "Enter step size in x direction:",initialvalue="0.005")
             dy = simpledialog.askfloat("Step Size", "Enter step size in y direction:",initialvalue="0.01")        
