@@ -1,10 +1,10 @@
 import matplotlib.pyplot as plt
 import tkinter as tk
 from tkinter import simpledialog
-from solvers.solver_explicit import Solver_explicit
-from solvers.solver_implicit import Solver_implicit
-from preprocessor.preprocessor import Preprocessor
-from postprocessor.postprocessor import PostProcessor  # Import the PostProcessor class
+from solvers.Plate_solver_explicit import Solver_explicit
+from solvers.Plate_solver_implicit import Solver_implicit
+from preprocessor.Plate_preprocessor import Preprocessor
+from postprocessor.Plate_postprocessor import PostProcessor  # Import the PostProcessor class
 
 class CFDApp:
     def __init__(self):
