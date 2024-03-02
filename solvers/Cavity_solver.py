@@ -21,6 +21,9 @@ class cavity_solver:
         self.diagonal4 = None
         self.lower_diagonal4 = None
         self.upper_diagonal4 = None
+        
+        self.ITER = []
+        self.errorMat = []
     
     
     def ADI_method(self):
@@ -55,8 +58,7 @@ class cavity_solver:
         self.lower_diagonal4 = np.zeros((pre.nody-2))
         self.upper_diagonal4 = np.zeros((pre.nody-2))
         
-        ITER = []
-        errorMat = []
+
         error = 1
         iter = 1
         
@@ -71,9 +73,9 @@ class cavity_solver:
         
             # Display error and iterations while running 
         
-            iter, error =  self.algorithmCharacteristics(pre, ITER, error, errorMat, iter)
+            iter, error =  self.algorithmCharacteristics(pre, self.ITER, error, self.errorMat, iter)
         
-
+        self.preprocessor = pre
         
     def solveStreamFunction(self, pre):
         
@@ -260,7 +262,7 @@ class cavity_solver:
         pre.zhta3[0, :] = val3    
         
         # Top Wall BC
-        val4= -(2/(ddy)) * (pre.psi3[pre.nody-2,:] - pre.psi3[pre.nody-1,:])
+        val4= -(2/(ddy)) * (pre.psi3[pre.nody-2,:] - pre.psi3[pre.nody-1,:] + pre.dy * pre.wall_vel)
         pre.zhta1[pre.nody-1,:] = val4
         pre.zhta2[pre.nody-1,:] = val4
         pre.zhta3[pre.nody-1,:] = val4   
@@ -285,10 +287,10 @@ class cavity_solver:
     def algorithmCharacteristics(self, pre, ITER, error, errorMat, iter):
         error1 = np.square(np.subtract(pre.zhta1, pre.zhta3))
         
-        ITER.append(iter)
+        self.ITER.append(iter)
         print(error)
         error = error1.sum()
-        errorMat. append(error)
+        self.errorMat.append(error)
         
         print(iter)
         iter += 1

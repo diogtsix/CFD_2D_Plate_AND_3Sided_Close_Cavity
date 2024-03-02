@@ -36,8 +36,11 @@ class cavity_preprocessor:
         self.nodx = round(self.wall_length / self.dx) + 1
         self.nody = round(self.wall_length / self.dy) + 1
         
-        self.xCoords = np.linspace(0, self.wall_length  ,self.nodx) # coordinates as a vector because of symmetry
-        self.yCoords = np.linspace(0, self.wall_length  ,self.nody) # coordinates as a vector because of symmetry
+        X = np.linspace(0, self.wall_length  ,self.nodx) # coordinates as a vector because of symmetry
+        Y = np.linspace(0, self.wall_length  ,self.nody) # coordinates as a vector because of symmetry
+        
+        
+        [self.xCoords, self.yCoords] = np.meshgrid(X,Y)
         
         self.u_vel = np.zeros((self.nody, self.nodx))
         self.v_vel = np.zeros((self.nody, self.nodx))
