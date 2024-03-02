@@ -3,13 +3,14 @@ import numpy as np
 class cavity_preprocessor:
     
     
-    def __init__(self, wall_length, dx, dy, relax_factor, wall_vel, 
+    def __init__(self, wall_length, dx, dy, dt, relax_factor, wall_vel, 
                  reynolds, error):
         
         
         self.wall_length = wall_length
         self.dx = dx
         self.dy = dy
+        self.dt = dt
         self.relax_factor = relax_factor
         self.wall_vel = wall_vel
         self.reynolds = reynolds
@@ -35,17 +36,17 @@ class cavity_preprocessor:
         self.nodx = round(self.wall_length / self.dx) + 1
         self.nody = round(self.wall_length / self.dy) + 1
         
-        self.xCoords = np.linspace(0, self.wall_length  ,self.nodx)
-        self.yCoords = np.linspace(0, self.wall_length  ,self.nody)
+        self.xCoords = np.linspace(0, self.wall_length  ,self.nodx) # coordinates as a vector because of symmetry
+        self.yCoords = np.linspace(0, self.wall_length  ,self.nody) # coordinates as a vector because of symmetry
         
-        self.u_vel = np.zeros(self.nody, self.nodx)
-        self.v_vel = np.zeros(self.nody, self.nodx)
-        self.psi1 = np.zeros(self.nody, self.nodx)
-        self.psi2 = np.zeros(self.nody, self.nodx)
-        self.psi3 = np.zeros(self.nody, self.nodx)
-        self.zhta1 = np.zeros(self.nody, self.nodx)
-        self.zhta2 = np.zeros(self.nody, self.nodx)
-        self.zhta3 = np.zeros(self.nody, self.nodx)
+        self.u_vel = np.zeros((self.nody, self.nodx))
+        self.v_vel = np.zeros((self.nody, self.nodx))
+        self.psi1 = np.zeros((self.nody, self.nodx))
+        self.psi2 = np.zeros((self.nody, self.nodx))
+        self.psi3 = np.zeros((self.nody, self.nodx))
+        self.zhta1 = np.zeros((self.nody, self.nodx))
+        self.zhta2 = np.zeros((self.nody, self.nodx))
+        self.zhta3 = np.zeros((self.nody, self.nodx))
     
     
     def initialize_velocity_field(self):
