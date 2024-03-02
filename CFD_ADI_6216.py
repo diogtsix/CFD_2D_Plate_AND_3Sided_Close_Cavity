@@ -113,7 +113,7 @@ while e>(10**(-4)):
             
             L[i-1]=(dt/2)*Zhta1[j,i]+(dt/(2*(dy**2)))*Psi1[j+1,i]+(1-(dt/(dy**2)))*Psi1[j,i] + (dt/(2*(dy**2)))*Psi1[j-1,i]
 
-            
+    
             if i==1:
                 
                 
@@ -135,7 +135,6 @@ while e>(10**(-4)):
         for j in range(1,nody-1):
             
             L[j-1]=(dt/2)*Zhta1[j,i]+(dt/(2*ddx))*Psi2[j,i+1]+(1-(dt/ddx))*Psi2[j,i]+(dt/(2*ddx))*Psi2[j,i-1]
-                
                 
             if j==1:
                 
