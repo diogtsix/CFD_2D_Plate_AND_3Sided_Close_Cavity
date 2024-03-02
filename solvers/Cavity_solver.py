@@ -60,7 +60,7 @@ class cavity_solver:
         error = 1
         iter = 1
         
-        while error>(10**(-1)):
+        while error>(10**(-4)):
             # Stream Function Clalculations : Solving the 2 equation system
         
             pre = self.solveStreamFunction(pre)
@@ -242,13 +242,13 @@ class cavity_solver:
         ddy = pre.dy**2
         
         # Left Wall BC
-        val1 = (2/(ddx)) * (pre.psi3[:,0] - pre.psi3[:,1])
+        val1 = (2/(ddx)) * (pre.psi3[:,0] - pre.psi3[:,1] )
         pre.zhta1[:, 0] = val1
         pre.zhta2[:, 0] = val1
         pre.zhta3[:, 0] = val1
         
         # Right Wall BC
-        val2 = (2/(ddx)) * (pre.psi3[:,pre.nodx - 1] - pre.psi3[:,pre.nodx - 2])
+        val2 = (2/(ddx)) * (pre.psi3[:,pre.nodx - 1] - pre.psi3[:,pre.nodx - 2] )
         pre.zhta1[:, pre.nodx - 1] = val2
         pre.zhta2[:, pre.nodx - 1] = val2
         pre.zhta3[:, pre.nodx - 1] = val2
@@ -260,7 +260,7 @@ class cavity_solver:
         pre.zhta3[0, :] = val3    
         
         # Top Wall BC
-        val4= (2/(ddy)) * (pre.psi3[pre.nody-2,:] - pre.psi3[pre.nody-1,:] + pre.dy + pre.wall_vel)
+        val4= -(2/(ddy)) * (pre.psi3[pre.nody-2,:] - pre.psi3[pre.nody-1,:])
         pre.zhta1[pre.nody-1,:] = val4
         pre.zhta2[pre.nody-1,:] = val4
         pre.zhta3[pre.nody-1,:] = val4   
