@@ -29,28 +29,18 @@ class Preprocessor:
 
         return self.grid_nodes_x, self.grid_nodes_y
     
-    def initialize_velocity_field(self):
-        self.create_grid()
-
-        # Initialize velocity fields with zeros
-        self.grid_u_velocity = np.ones_like(self.grid_nodes_x)
-        self.grid_v_velocity = np.zeros_like(self.grid_nodes_y)
         
     def initialize_velocity_field(self):
         self.create_grid()   
-        
-           
 
     # Initialize velocity fields with zeros
         self.grid_u_velocity = np.ones_like(self.grid_nodes_x)
-        self.grid_v_velocity = np.zeros_like(self.grid_nodes_y)
+        self.grid_v_velocity = np.zeros_like(self.grid_nodes_y) * self.free_flow_velocity
         
-    # Set boundary conditions
-        self.grid_u_velocity[:, 0:2] = self.free_flow_velocity  # First 2 columns, all rows
 
     # Set velocity to 0 for points on the top boundary where grid_nodes_x is between 0 and 10
         for i in range(self.grid_u_velocity.shape[1]):
-            mask = (self.grid_nodes_x[0, i] >= 1) & (self.grid_nodes_x[0, i] <= 10+1)
+            mask = (self.grid_nodes_x[0, i] >= 1 - self.dx) & (self.grid_nodes_x[0, i] <= 10 +1)
             self.grid_u_velocity[0, i, mask] = 0
 
     # Set velocity to free_flow_velocity for the last row (bottom boundary)

@@ -1,10 +1,10 @@
 import matplotlib.pyplot as plt
 import tkinter as tk
 from tkinter import simpledialog
-from solvers.solver_explicit import Solver_explicit
-from solvers.solver_implicit import Solver_implicit
-from preprocessor.preprocessor import Preprocessor
-from postprocessor.postprocessor import PostProcessor  # Import the PostProcessor class
+from solvers.Plate_solver_explicit import Solver_explicit
+from solvers.Plate_solver_implicit import Solver_implicit
+from preprocessor.Plate_preprocessor import Preprocessor
+from postprocessor.Plate_postprocessor import PostProcessor  # Import the PostProcessor class
 
 class CFDApp:
     def __init__(self):
@@ -23,6 +23,7 @@ class CFDApp:
         self.compare_button.pack()
 
         self.root.mainloop()
+        
 
     def run_explicit_solver(self):
         solver_type = 'explicit'
@@ -45,7 +46,7 @@ class CFDApp:
 
 
     def run_solver(self, solver_class, dx, dy, solver_type):
-        grid_y_size = 0.09
+        grid_y_size = 0.1
         free_flow_velocity = 1
 
         PreProcess = Preprocessor(dx=dx, dy=dy, grid_y_size=grid_y_size, free_flow_velocity=free_flow_velocity)
@@ -64,13 +65,13 @@ class CFDApp:
         # Visualize the results using the PostProcessor class
         post_processor = PostProcessor(Result.grid_nodes_x, Result.grid_nodes_y, Result.grid_u_velocity, solver_type = solver_type)
         post_processor.plot_colored_velocity_field()
-        post_processor.plot_u_velocity_profiles(x_values=[2, 4, 6, 8, 10])
+        post_processor.plot_u_velocity_profiles(x_values=[2, 3, 4, 5,  6, 7,  8, 9, 10])
 
     def compare_solvers(self):
         solver_type = 'compare'
         dx, dy = self.get_step_sizes(solver_type)
         if dx and dy:
-            grid_y_size = 0.1
+            grid_y_size = 0.09
             free_flow_velocity = 1
 
         # Create Preprocessor instance for explicit solver
@@ -102,19 +103,29 @@ class CFDApp:
             implicit_solver.solve()
             
             # Visualize the results of the implicit solver using the PostProcessor class
-            implicit_post_processor = PostProcessor(implicit_solver.grid_nodes_x, implicit_solver.grid_nodes_y, implicit_solver.grid_u_velocity)
+            implicit_post_processor = PostProcessor(implicit_solver.grid_nodes_x, implicit_solver.grid_nodes_y, implicit_solver.grid_u_velocity, 
+                                                     solver_type = 'implicit')
             implicit_post_processor.plot_colored_velocity_field()
-            implicit_post_processor.plot_u_velocity_profiles(x_values=[2, 4, 6, 8, 10])
+            implicit_post_processor.plot_u_velocity_profiles(x_values=[2, 3, 4, 5,  6, 7,  8, 9, 10])
+            
+            # Visualize the results of the explicit solver using the PostProcessor class
+            explicit_post_processor = PostProcessor(explicit_solver.grid_nodes_x, explicit_solver.grid_nodes_y, explicit_solver.grid_u_velocity, 
+                                                     solver_type = 'explixit')
+            explicit_post_processor.plot_colored_velocity_field()
+            explicit_post_processor.plot_u_velocity_profiles(x_values=[2, 3, 4, 5,  6, 7,  8, 9, 10])
+
+
+
 
     def get_step_sizes(self, solver_type):
         if solver_type == 'implicit':
-            dx = simpledialog.askfloat("Step Size", "Enter step size in x direction:",initialvalue="0.01")
-            dy = simpledialog.askfloat("Step Size", "Enter step size in y direction:",initialvalue="0.01")
+            dx = simpledialog.askfloat("Step Size", "Enter step size in x direction:",initialvalue="0.1")
+            dy = simpledialog.askfloat("Step Size", "Enter step size in y direction:",initialvalue="0.001")
         elif solver_type == 'explixit':  
-            dx = simpledialog.askfloat("Step Size", "Enter step size in x direction:",initialvalue="0.01")
+            dx = simpledialog.askfloat("Step Size", "Enter step size in x direction:",initialvalue="0.005")
             dy = simpledialog.askfloat("Step Size", "Enter step size in y direction:",initialvalue="0.01")        
         else:      
-            dx = simpledialog.askfloat("Step Size", "Enter step size in x direction:",initialvalue="0.01")
+            dx = simpledialog.askfloat("Step Size", "Enter step size in x direction:",initialvalue="0.005")
             dy = simpledialog.askfloat("Step Size", "Enter step size in y direction:",initialvalue="0.01")        
         
             

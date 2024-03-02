@@ -26,14 +26,13 @@ class Solver_explicit:
         self.Cf_x_cordinate = []
     
 
-        
     
-    def u_i_plus_1_j(self,Dx,Dy,viscosity,AN,PN,KN,N_u,N_v):
-            
-        first_term = (2*Dx*viscosity/(Dy**2))*(PN-2*N_u+KN)/N_u
-        second_term = (Dx/Dy)*(N_v*(PN-KN)/N_u)
-        velocity = AN+first_term-second_term
-            
+    def u_i_plus_1_j(self, Dx, Dy, viscosity, AN, PN, KN, N_u, N_v):
+    # Adding a small epsilon to avoid division by zero or instability due to very small N_u
+        epsilon = 1e-10
+        first_term = (2 * Dx * viscosity / (Dy ** 2)) * (PN - 2 * N_u + KN) / (N_u + epsilon)
+        second_term = (Dx / Dy) * (N_v * (PN - KN) / (N_u + epsilon))
+        velocity = AN + first_term - second_term
         return velocity
         
     def v_i_j_plus_1(self,Dx,Dy,DN,AN,KN):
@@ -61,7 +60,7 @@ class Solver_explicit:
             for j in range(1, elements_in_y-1):
             
 
-                Node = (j,1)
+                Node = (j,i)
                 left_node = (j,i-1)
                 right_node = (j,i+1)
                 top_node = (j+1,i)
