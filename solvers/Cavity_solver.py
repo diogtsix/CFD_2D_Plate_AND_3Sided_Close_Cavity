@@ -1,5 +1,8 @@
 import numpy as np
 from utilities.thomasAlgorithm import Thomas
+import matplotlib.pyplot as plt
+from postprocessor.Cavity_postprocess import cavity_postprocess
+
 
 class cavity_solver:
     
@@ -29,6 +32,8 @@ class cavity_solver:
     def ADI_method(self):
         
         pre = self.preprocessor
+        
+        
         
         # Build const and const vectors
         
@@ -62,7 +67,7 @@ class cavity_solver:
         error = 1
         iter = 1
         
-        while error>(10**(-4)):
+        while error> self.preprocessor.error:
             # Stream Function Clalculations : Solving the 2 equation system
         
             pre = self.solveStreamFunction(pre)
@@ -74,9 +79,10 @@ class cavity_solver:
             # Display error and iterations while running 
         
             iter, error =  self.algorithmCharacteristics(pre, self.ITER, error, self.errorMat, iter)
-        
+         
         self.preprocessor = pre
         
+          
     def solveStreamFunction(self, pre):
         
         # constant values
